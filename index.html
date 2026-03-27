@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>顺德家电商城 - 家电之都，品质之选</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .gradient-bg {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+        .product-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+        }
+        .cart-badge {
+            animation: pulse 2s infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+    </style>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <!-- 顶部导航 -->
+    <nav class="gradient-bg text-white shadow-lg sticky top-0 z-50">
+        <div class="container mx-auto px-4 py-3">
+            <div class="flex justify-between items-center">
+                <div class="flex items-center space-x-2">
+                    <i class="fas fa-bolt text-2xl"></i>
+                    <span class="text-xl font-bold">顺德家电商城</span>
+                </div>
+                <div class="flex items-center space-x-4">
+                    <button onclick="showSection('products')" class="hover:opacity-80">
+                        <i class="fas fa-home"></i> 首页
+                    </button>
+                    <button onclick="showSection('cart')" class="relative hover:opacity-80">
+                        <i class="fas fa-shopping-cart text-xl"></i>
+                        <span id="cart-count" class="cart-badge absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center hidden">0</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 主内容区 -->
+    <main class="container mx-auto px-4 py-8">
+        <!-- 商品列表区 -->
+        <section id="products-section">
+            <!-- 横幅广告 -->
+            <div class="gradient-bg rounded-2xl p-8 mb-8 text-white text-center">
+                <h1 class="text-3xl md:text-4xl font-bold mb-2">🏠 家电之都 · 品质之选</h1>
+                <p class="text-lg opacity-90">顺德制造，值得信赖 | 新店开业，全场优惠</p>
+            </div>
+
+            <!-- 分类筛选 -->
+            <div class="flex flex-wrap gap-2 mb-6">
+                <button onclick="filterCategory('all')" class="category-btn px-4 py-2 rounded-full bg-purple-600 text-white hover:bg-purple-700 transition">全部商品</button>
+                <button onclick="filterCategory('kitchen')" class="category-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition">厨房电器</button>
+                <button onclick="filterCategory('living')" class="category-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition">生活电器</button>
+                <button onclick="filterCategory('small')" class="category-btn px-4 py-2 rounded-full bg-gray-200 text-gray-700 hover:bg-gray-300 transition">小家电</button>
+            </div>
+
+            <!-- 商品网格 -->
+            <div id="products-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+                <!-- 商品卡片将由 JavaScript 动态生成 -->
+            </div>
+        </section>
+
+        <!-- 购物车区 -->
+        <section id="cart-section" class="hidden">
+            <div class="max-w-2xl mx-auto">
+                <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-shopping-cart mr-3 text-purple-600"></i> 购物车
+                </h2>
+                
+                <div id="cart-items" class="space-y-4 mb-6">
+                    <!-- 购物车商品将由 JavaScript 动态生成 -->
+                </div>
+
+                <div id="cart-empty" class="text-center py-12 text-gray-500">
+                    <i class="fas fa-shopping-cart text-6xl mb-4 opacity-30"></i>
+                    <p>购物车是空的</p>
+                    <button onclick="showSection('products')" class="mt-4 text-purple-600 hover:underline">去选购商品</button>
+                </div>
+
+                <div id="cart-summary" class="hidden bg-white rounded-xl shadow-lg p-6">
+                    <div class="flex justify-between items-center text-xl font-bold mb-4">
+                        <span>总计：</span>
+                        <span id="cart-total" class="text-red-600">¥0</span>
+                    </div>
+                    <button onclick="showSection('checkout')" class="w-full gradient-bg text-white py-3 rounded-lg font-bold hover:opacity-90 transition">
+                        <i class="fas fa-check-circle mr-2"></i> 立即下单
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 结算/下单区 -->
+        <section id="checkout-section" class="hidden">
+            <div class="max-w-2xl mx-auto">
+                <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <i class="fas fa-clipboard-list mr-3 text-purple-600"></i> 填写订单信息
+                </h2>
+
+                <!-- 订单商品预览 -->
+                <div class="bg-white rounded-xl shadow-lg p-6 mb-6">
+                    <h3 class="font-bold mb-4">订单商品</h3>
+                    <div id="checkout-items" class="space-y-2">
+                        <!-- 由 JavaScript 动态生成 -->
+                    </div>
+                    <div class="border-t mt-4 pt-4 flex justify-between font-bold">
+                        <span>总计：</span>
+                        <span id="checkout-total" class="text-red-600">¥0</span>
+                    </div>
+                </div>
+
+                <!-- 客户信息表单 -->
+                <form id="order-form" class="bg-white rounded-xl shadow-lg p-6 space-y-4">
+                    <h3 class="font-bold mb-2">联系信息</h3>
+                    
+                    <div>
+                        <label class="block text-gray-700 mb-1">姓名 *</label>
+                        <input type="text" id="customer-name" required class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="请输入您的姓名">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 mb-1">电话 *</label>
+                        <input type="tel" id="customer-phone" required class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="请输入联系电话">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 mb-1">微信</label>
+                        <input type="text" id="customer-wechat" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="微信号（可选）">
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 mb-1">收货地址 *</label>
+                        <textarea id="customer-address" required rows="2" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="请输入详细收货地址"></textarea>
+                    </div>
+                    
+                    <div>
+                        <label class="block text-gray-700 mb-1">备注</label>
+                        <textarea id="order-note" rows="2" class="w-full border rounded-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-purple-600" placeholder="其他要求或备注（可选）"></textarea>
+                    </div>
+
+                    <div class="flex space-x-4 pt-4">
+                        <button type="button" onclick="showSection('cart')" class="flex-1 border border-gray-300 text-gray-700 py-3 rounded-lg font-bold hover:bg-gray-100 transition">
+                            <i class="fas fa-arrow-left mr-2"></i> 返回购物车
+                        </button>
+                        <button type="submit" class="flex-1 gradient-bg text-white py-3 rounded-lg font-bold hover:opacity-90 transition">
+                            <i class="fas fa-paper-plane mr-2"></i> 提交订单
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </section>
+
+        <!-- 订单成功区 -->
+        <section id="success-section" class="hidden">
+            <div class="max-w-lg mx-auto text-center py-12">
+                <div class="bg-white rounded-xl shadow-lg p-8">
+                    <i class="fas fa-check-circle text-6xl text-green-500 mb-4"></i>
+                    <h2 class="text-2xl font-bold mb-2">订单提交成功！</h2>
+                    <p class="text-gray-600 mb-6">我们会尽快联系您确认订单</p>
+                    <div class="bg-gray-50 rounded-lg p-4 mb-6 text-left">
+                        <p class="text-sm text-gray-500 mb-1">订单编号</p>
+                        <p id="order-id" class="font-mono font-bold text-purple-600"></p>
+                    </div>
+                    <button onclick="resetAndShop()" class="gradient-bg text-white px-8 py-3 rounded-lg font-bold hover:opacity-90 transition">
+                        <i class="fas fa-shopping-bag mr-2"></i> 继续购物
+                    </button>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- 底部 -->
+    <footer class="bg-gray-800 text-white py-8 mt-12">
+        <div class="container mx-auto px-4 text-center">
+            <p class="mb-2">🏠 顺德家电商城 | 家电之都，品质之选</p>
+            <p class="text-sm text-gray-400">广东省佛山市顺德区 | 联系电话：待补充</p>
+        </div>
+    </footer>
+
+    <script>
+        // 商品数据
+        const products = [
+            { id: 1, name: '美的电饭煲 5L', price: 299, originalPrice: 399, category: 'kitchen', image: 'https://via.placeholder.com/300x300/667eea/ffffff?text=电饭煲', desc: '智能预约，不粘内胆' },
+            { id: 2, name: '九阳豆浆机', price: 259, originalPrice: 359, category: 'kitchen', image: 'https://via.placeholder.com/300x300/764ba2/ffffff?text=豆浆机', desc: '全自动，免滤渣' },
+            { id: 3, name: '格兰仕微波炉', price: 459, originalPrice: 599, category: 'kitchen', image: 'https://via.placeholder.com/300x300/667eea/ffffff?text=微波炉', desc: '23L大容量，多档调节' },
+            { id: 4, name: '格力空调 1.5匹', price: 2599, originalPrice: 2999, category: 'living', image: 'https://via.placeholder.com/300x300/764ba2/ffffff?text=空调', desc: '变频节能，静音舒适' },
+            { id: 5, name: '美的电风扇', price: 159, originalPrice: 199, category: 'living', image: 'https://via.placeholder.com/300x300/667eea/ffffff?text=电风扇', desc: '静音设计，多档风速' },
+            { id: 6, name: '德尔玛加湿器', price: 89, originalPrice: 129, category: 'living', image: 'https://via.placeholder.com/300x300/764ba2/ffffff?text=加湿器', desc: '大容量，静音运行' },
+            { id: 7, name: '小米电热水壶', price: 99, originalPrice: 149, category: 'small', image: 'https://via.placeholder.com/300x300/667eea/ffffff?text=热水壶', desc: '快速加热，自动断电' },
+            { id: 8, name: '飞利浦吹风机', price: 169, originalPrice: 239, category: 'small', image: 'https://via.placeholder.com/300x300/764ba2/ffffff?text=吹风机', desc: '负离子护发，多档温控' },
+            { id: 9, name: '美的电磁炉', price: 199, originalPrice: 269, category: 'kitchen', image: 'https://via.placeholder.com/300x300/667eea/ffffff?text=电磁炉', desc: '大火力，多档调节' },
+            { id: 10, name: '苏泊尔压力锅', price: 399, originalPrice: 499, category: 'kitchen', image: 'https://via.placeholder.com/300x300/764ba2/ffffff?text=压力锅', desc: '快速烹饪，安全可靠' },
+            { id: 11, name: '奥克斯饮水机', price: 299, originalPrice: 399, category: 'living', image: 'https://via.placeholder.com/300x300/667eea/ffffff?text=饮水机', desc: '冷热双温，童锁保护' },
+            { id: 12, name: '小熊煮蛋器', price: 59, originalPrice: 89, category: 'small', image: 'https://via.placeholder.com/300x300/764ba2/ffffff?text=煮蛋器', desc: '小巧便携，自动断电' }
+        ];
+
+        // 购物车数据
+        let cart = JSON.parse(localStorage.getItem('cart') || '[]');
+
+        // 初始化
+        document.addEventListener('DOMContentLoaded', () => {
+            renderProducts();
+            updateCartUI();
+        });
+
+        // 渲染商品
+        function renderProducts(category = 'all') {
+            const grid = document.getElementById('products-grid');
+            const filtered = category === 'all' ? products : products.filter(p => p.category === category);
+            
+            grid.innerHTML = filtered.map(product => `
+                <div class="product-card bg-white rounded-xl shadow-md overflow-hidden transition-all duration-300 cursor-pointer" onclick="showProductDetail(${product.id})">
+                    <div class="relative">
+                        <img src="${product.image}" alt="${product.name}" class="w-full aspect-square object-cover">
+                        <div class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded">
+                            特惠
+                        </div>
+                    </div>
+                    <div class="p-3">
+                        <h3 class="font-bold text-sm md:text-base mb-1 truncate">${product.name}</h3>
+                        <p class="text-xs text-gray-500 mb-2 truncate">${product.desc}</p>
+                        <div class="flex items-center justify-between">
+                            <div>
+                                <span class="text-red-600 font-bold">¥${product.price}</span>
+                                <span class="text-xs text-gray-400 line-through ml-1">¥${product.originalPrice}</span>
+                            </div>
+                            <button onclick="event.stopPropagation(); addToCart(${product.id})" class="bg-purple-600 text-white px-2 py-1 rounded text-sm hover:bg-purple-700 transition">
+                                <i class="fas fa-plus"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // 筛选分类
+        function filterCategory(category) {
+            document.querySelectorAll('.category-btn').forEach(btn => {
+                btn.classList.remove('bg-purple-600', 'text-white');
+                btn.classList.add('bg-gray-200', 'text-gray-700');
+            });
+            event.target.classList.remove('bg-gray-200', 'text-gray-700');
+            event.target.classList.add('bg-purple-600', 'text-white');
+            renderProducts(category);
+        }
+
+        // 显示商品详情（简化版，直接添加到购物车）
+        function showProductDetail(id) {
+            addToCart(id);
+        }
+
+        // 添加到购物车
+        function addToCart(productId) {
+            const product = products.find(p => p.id === productId);
+            const existingItem = cart.find(item => item.id === productId);
+            
+            if (existingItem) {
+                existingItem.quantity++;
+            } else {
+                cart.push({ ...product, quantity: 1 });
+            }
+            
+            saveCart();
+            updateCartUI();
+            
+            // 显示提示
+            showToast(`已添加 ${product.name}`);
+        }
+
+        // 更新购物车数量
+        function updateQuantity(productId, delta) {
+            const item = cart.find(item => item.id === productId);
+            if (item) {
+                item.quantity += delta;
+                if (item.quantity <= 0) {
+                    cart = cart.filter(i => i.id !== productId);
+                }
+                saveCart();
+                updateCartUI();
+            }
+        }
+
+        // 保存购物车
+        function saveCart() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+        }
+
+        // 更新购物车 UI
+        function updateCartUI() {
+            const count = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            
+            // 更新购物车徽章
+            const badge = document.getElementById('cart-count');
+            if (count > 0) {
+                badge.textContent = count;
+                badge.classList.remove('hidden');
+            } else {
+                badge.classList.add('hidden');
+            }
+            
+            // 更新购物车页面
+            const cartItems = document.getElementById('cart-items');
+            const cartEmpty = document.getElementById('cart-empty');
+            const cartSummary = document.getElementById('cart-summary');
+            
+            if (cart.length === 0) {
+                cartItems.innerHTML = '';
+                cartEmpty.classList.remove('hidden');
+                cartSummary.classList.add('hidden');
+            } else {
+                cartEmpty.classList.add('hidden');
+                cartSummary.classList.remove('hidden');
+                
+                cartItems.innerHTML = cart.map(item => `
+                    <div class="bg-white rounded-xl shadow-md p-4 flex items-center space-x-4">
+                        <img src="${item.image}" alt="${item.name}" class="w-20 h-20 rounded-lg object-cover">
+                        <div class="flex-1">
+                            <h3 class="font-bold">${item.name}</h3>
+                            <p class="text-red-600 font-bold">¥${item.price}</p>
+                        </div>
+                        <div class="flex items-center space-x-2">
+                            <button onclick="updateQuantity(${item.id}, -1)" class="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 transition">
+                                <i class="fas fa-minus text-sm"></i>
+                            </button>
+                            <span class="w-8 text-center font-bold">${item.quantity}</span>
+                            <button onclick="updateQuantity(${item.id}, 1)" class="w-8 h-8 rounded-full bg-gray-200 hover:bg-gray-300 transition">
+                                <i class="fas fa-plus text-sm"></i>
+                            </button>
+                        </div>
+                    </div>
+                `).join('');
+                
+                document.getElementById('cart-total').textContent = `¥${total}`;
+            }
+            
+            // 更新结算页面
+            updateCheckoutUI();
+        }
+
+        // 更新结算页面
+        function updateCheckoutUI() {
+            const total = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
+            
+            document.getElementById('checkout-items').innerHTML = cart.map(item => `
+                <div class="flex justify-between text-sm">
+                    <span>${item.name} x${item.quantity}</span>
+                    <span>¥${item.price * item.quantity}</span>
+                </div>
+            `).join('');
+            
+            document.getElementById('checkout-total').textContent = `¥${total}`;
+        }
+
+        // 显示不同区块
+        function showSection(section) {
+            ['products', 'cart', 'checkout', 'success'].forEach(s => {
+                document.getElementById(`${s}-section`).classList.add('hidden');
+            });
+            document.getElementById(`${section}-section`).classList.remove('hidden');
+            window.scrollTo(0, 0);
+        }
+
+        // 提交订单
+        document.getElementById('order-form').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            
+            const orderData = {
+                id: 'SD' + Date.now(),
+                time: new Date().toLocaleString('zh-CN'),
+                customer: {
+                    name: document.getElementById('customer-name').value,
+                    phone: document.getElementById('customer-phone').value,
+                    wechat: document.getElementById('customer-wechat').value,
+                    address: document.getElementById('customer-address').value
+                },
+                items: cart,
+                total: cart.reduce((sum, item) => sum + item.price * item.quantity, 0),
+                note: document.getElementById('order-note').value
+            };
+            
+            // 发送订单到飞书
+            try {
+                await sendOrderToFeishu(orderData);
+                document.getElementById('order-id').textContent = orderData.id;
+                showSection('success');
+                cart = [];
+                saveCart();
+                updateCartUI();
+            } catch (error) {
+                alert('订单提交失败，请稍后重试或直接电话联系');
+                console.error(error);
+            }
+        });
+
+        // 发送订单到飞书
+        async function sendOrderToFeishu(order) {
+            const response = await fetch('/api/order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(order)
+            });
+            
+            const result = await response.json();
+            
+            if (!result.success) {
+                throw new Error(result.error || '订单发送失败');
+            }
+            
+            console.log('订单已发送到飞书:', result);
+        }
+
+        // 重置并继续购物
+        function resetAndShop() {
+            document.getElementById('order-form').reset();
+            showSection('products');
+        }
+
+        // 显示提示
+        function showToast(message) {
+            const toast = document.createElement('div');
+            toast.className = 'fixed top-20 left-1/2 transform -translate-x-1/2 bg-black bg-opacity-75 text-white px-4 py-2 rounded-lg z-50';
+            toast.textContent = message;
+            document.body.appendChild(toast);
+            setTimeout(() => toast.remove(), 2000);
+        }
+    </script>
+</body>
+</html>
